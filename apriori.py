@@ -1,7 +1,7 @@
 import itertools
 import pymysql
 
-# MINSUPPORTPCT = 1
+MINSUPPORTPCT = 5
 
 allSingletonProductIds = []
 allDoubletonProductIds = set()
@@ -14,10 +14,7 @@ queryTransactions = 'select count(distinct transaction_id) from transactions'
 cur.execute(queryTransactions)
 transactions = cur.fetchone()[0]
 
-# minsupport = transactions * (MINSUPPORTPCT/100)
-minsupport = 60
-
-print(minsupport)
+minsupport = transactions * (MINSUPPORTPCT/100)
 
 cur.execute('select product_id from transactions group by product_id \
             having count(transaction_id) >= %s order by product_id desc', minsupport)
