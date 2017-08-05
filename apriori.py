@@ -36,9 +36,6 @@ def findDoubletons():
                     'and t2.product_id = %s', (productId1, productId2))
         count = cur.fetchone()[0]
         if count > 15:
-            print(productId1,productId2,'[',count,']')
-            cur.execute('insert into transaction_pairs '
-                        'values (%s, %s, %s)', (productId1, productId2, count))
             doubletonSet.add(candidate)
             allDoubletonProductIds.add(productId1)
             allDoubletonProductIds.add(productId2)
@@ -51,11 +48,10 @@ def findTripletons():
     for index, candidate in enumerate(tripletonCandidatesSorted):
         doubletonsInsideTripleton = list(itertools.combinations(candidate, 2))
         tripletonRejected = 0
-        # for new_index, doubleton in enumerate(doubletonsInsideTripleton):
-        #     if doubleton not in doubletonSet:
-        #         print('not in doubleset')
-        #         tripletonRejected = 1
-        #         break
+        for new_index, doubleton in enumerate(doubletonsInsideTripleton):
+             if doubleton not in doubletonSet:
+                 tripletonRejected = 1
+                 break
 
         if tripletonRejected == 0:
             cur.execute('select count(t1.transaction_id) '
@@ -68,10 +64,6 @@ def findTripletons():
                         'and t2.product_id = %s '
                         'and t3.product_id = %s ', (candidate[0], candidate[1], candidate[2]))
             count = cur.fetchone()[0]
-            if count > 5:
-                print(candidate[0], candidate[1], candidate[2], '[', count, ']')
-                # cur.execute('insert into transaction_triples '
-                #             'values (%s, %s, %s, %s)', (candidate[0], candidate[1], candidate[2], count))
 
 def findFourAssociatedProducts():
     candidates = list(itertools.combinations(allDoubletonProductIds, 4))
@@ -79,14 +71,13 @@ def findFourAssociatedProducts():
     for c in candidates:
         candidatesSorted.append(sorted(c))
     for index, candidate in enumerate(candidatesSorted):
-        # doubletonsInsideTripleton = list(itertools.combinations(candidate, 2))
+        doubletonsInsideTripleton = list(itertools.combinations(candidate, 2))
         rejected = 0
-        # for new_index, doubleton in enumerate(doubletonsInsideTripleton):
-        #     if doubleton not in doubletonSet:
-        #         print('not in doubleset')
-        #         tripletonRejected = 1
-        #         break
-
+        for new_index, doubleton in enumerate(doubletonsInsideTripleton):
+            if doubleton not in doubletonSet:
+                print('not in doubleset')
+                tripletonRejected = 1
+                break
         if rejected == 0:
             cur.execute('select count(t1.transaction_id) '
                         'from transactions t1 '
@@ -102,7 +93,6 @@ def findFourAssociatedProducts():
                         'and t4.product_id = %s', (candidate[0], candidate[1], candidate[2], candidate[3]))
             count = cur.fetchone()[0]
             if count > 5:
-                print(candidate[0], candidate[1], candidate[2], candidate[3], '[', count, ']')
                 cur.execute('insert into transaction_quadruples '
                             'values (%s, %s, %s, %s, %s)', (candidate[0], candidate[1], candidate[2], candidate[3], count))
 
