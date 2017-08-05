@@ -35,10 +35,10 @@ def findDoubletons():
                     'where t1.product_id = %s '
                     'and t2.product_id = %s', (productId1, productId2))
         count = cur.fetchone()[0]
-        if count > 15:
-            doubletonSet.add(candidate)
-            allDoubletonProductIds.add(productId1)
-            allDoubletonProductIds.add(productId2)
+        if count > minsupport:
+           doubletonSet.add(candidate)
+           allDoubletonProductIds.add(productId1)
+           allDoubletonProductIds.add(productId2)
 
 def findTripletons():
     tripletonCandidates = list(itertools.combinations(allDoubletonProductIds, 3))
@@ -50,8 +50,8 @@ def findTripletons():
         tripletonRejected = 0
         for new_index, doubleton in enumerate(doubletonsInsideTripleton):
              if doubleton not in doubletonSet:
-                 tripletonRejected = 1
-                 break
+                tripletonRejected = 1
+                break
 
         if tripletonRejected == 0:
             cur.execute('select count(t1.transaction_id) '
@@ -92,7 +92,7 @@ def findFourAssociatedProducts():
                         'and t3.product_id = %s '
                         'and t4.product_id = %s', (candidate[0], candidate[1], candidate[2], candidate[3]))
             count = cur.fetchone()[0]
-            if count > 5:
+            if count > minsupport:
                 cur.execute('insert into transaction_quadruples '
                             'values (%s, %s, %s, %s, %s)', (candidate[0], candidate[1], candidate[2], candidate[3], count))
 
