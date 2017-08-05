@@ -90,11 +90,13 @@ def findFourAssociatedProducts():
                         'where t1.product_id = %s '
                         'and t2.product_id = %s '
                         'and t3.product_id = %s '
-                        'and t4.product_id = %s', (candidate[0], candidate[1], candidate[2], candidate[3]))
+                        'and t4.product_id = %s', (candidate[0], candidate[1], 
+                                                   candidate[2], candidate[3]))
             count = cur.fetchone()[0]
             if count > minsupport:
                 cur.execute('insert into transaction_quadruples '
-                            'values (%s, %s, %s, %s, %s)', (candidate[0], candidate[1], candidate[2], candidate[3], count))
+                            'values (%s, %s, %s, %s, %s)', (candidate[0], candidate[1], 
+                                                            candidate[2], candidate[3], count))
 
 findDoubletons()
 findFourAssociatedProducts()
